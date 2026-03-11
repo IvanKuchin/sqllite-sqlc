@@ -1,5 +1,5 @@
 -- name: InsertTestTime :one
-INSERT INTO test_time (val) VALUES (?)
+INSERT INTO test_time (val, val2) VALUES (?, ?)
 RETURNING id;
 
 -- name: GetTestTimeByID :one

@@ -8,26 +8,32 @@ package queries
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const getTestTimeByID = `-- name: GetTestTimeByID :one
-SELECT id, val FROM test_time WHERE id = ? LIMIT 1
+SELECT id, val, val2 FROM test_time WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetTestTimeByID(ctx context.Context, id int64) (TestTime, error) {
 	row := q.db.QueryRowContext(ctx, getTestTimeByID, id)
 	var i TestTime
-	err := row.Scan(&i.ID, &i.Val)
+	err := row.Scan(&i.ID, &i.Val, &i.Val2)
 	return i, err
 }
 
 const insertTestTime = `-- name: InsertTestTime :one
-INSERT INTO test_time (val) VALUES (?)
+INSERT INTO test_time (val, val2) VALUES (?, ?)
 RETURNING id
 `
 
-func (q *Queries) InsertTestTime(ctx context.Context, val sql.NullTime) (int64, error) {
-	row := q.db.QueryRowContext(ctx, insertTestTime, val)
+type InsertTestTimeParams struct {
+	Val  sql.NullTime
+	Val2 time.Time
+}
+
+func (q *Queries) InsertTestTime(ctx context.Context, arg InsertTestTimeParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, insertTestTime, arg.Val, arg.Val2)
 	var id int64
 	err := row.Scan(&id)
 	return id, err

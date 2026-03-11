@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// 1. Use your exact DSN
-	dsn := "./data/sqlite.db?_parse_time=true" // Using in-memory for the test
+	dsn := "./data/sqlite.db?_journal_mode=WAL&_busy_timeout=5000&_synchronous=NORMAL&_cache_size=1000000&_foreign_keys=on" // Using in-memory for the test
 	db, err := sql.Open("sqlite3", dsn)
 	if err != nil {
 		log.Fatal(err)
@@ -36,7 +36,10 @@ func main() {
 	fmt.Printf("Inserting: %s\n", now)
 
 	// _, err = db.Exec("INSERT INTO test_time (val) VALUES (?)", now)
-	id, err := q.InsertTestTime(ctx, sql.NullTime{Time: now, Valid: true})
+	id, err := q.InsertTestTime(ctx, queries.InsertTestTimeParams{
+		Val:  sql.NullTime{Time: now, Valid: true},
+		Val2: now,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,6 +69,7 @@ func main() {
 		fmt.Printf("❌ SCAN FAILED: %v\n", err)
 	} else {
 		fmt.Printf("✅ SCAN SUCCESS: %v (type %T)\n", testTime.Val.Time, testTime.Val.Time)
+		fmt.Printf("✅ SCAN SUCCESS: %v (type %T)\n", testTime.Val2, testTime.Val2)
 	}
 
 }

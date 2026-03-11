@@ -6,9 +6,11 @@ package queries
 
 import (
 	"database/sql"
+	"time"
 )
 
 type TestTime struct {
-	ID  int64
-	Val sql.NullTime
+	ID   int64
+	Val  sql.NullTime
+	Val2 time.Time
 }
