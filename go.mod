@@ -1,4 +1,4 @@
-module go-sqlite
+module test-go-sqlite
 
 go 1.25.5
 
